@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
 // TODO: Paste your Firebase config object here!
 const firebaseConfig = {
@@ -137,6 +137,10 @@ function loadBooks() {
         const books = [];
         snapshot.forEach(doc => books.push({ id: doc.id, ...doc.data() }));
         renderItems(books, 'booksContainer', 'noBooks', 'No Books Uploaded Yet.', 'books');
+    }, (error) => {
+        document.getElementById('noBooks').style.display = "block";
+        document.getElementById('noBooks').innerText = "Error Loading Database: " + error.message;
+        console.error(error);
     });
 }
 
@@ -145,6 +149,10 @@ function loadRecords() {
         const records = [];
         snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
         renderItems(records, 'recordsContainer', 'noRecords', 'No Records Uploaded Yet.', 'records');
+    }, (error) => {
+        document.getElementById('noRecords').style.display = "block";
+        document.getElementById('noRecords').innerText = "Error Loading Database: " + error.message;
+        console.error(error);
     });
 }
 
@@ -186,8 +194,8 @@ async function uploadFile(fileInputId, nameInputId, statusId, collectionName) {
     const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
 
     try {
-        const uploadTask = await uploadBytesResumable(storageRef, file);
-        const downloadURL = await getDownloadURL(uploadTask.ref);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
 
         await addDoc(collection(db, collectionName), {
             name: name,
