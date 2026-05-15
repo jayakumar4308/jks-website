@@ -157,7 +157,7 @@ async function loadRecords() {
     }
 }
 
-function renderItems(items, containerId, msgId, emptyMsg, type, linkText = 'Download') {
+function renderItems(items, containerId, msgId, emptyMsg, type) {
     const container = document.getElementById(containerId);
     const noMsg = document.getElementById(msgId);
     
@@ -171,7 +171,10 @@ function renderItems(items, containerId, msgId, emptyMsg, type, linkText = 'Down
             container.innerHTML += `
             <div class="card-box">
             <h3>${item.name}</h3>
-            <a href="${item.url}" download="${item.name}" target="_blank">${linkText}</a>
+            <div style="margin: 10px 0;">
+                <a href="${item.url}" target="_blank" style="margin-right: 15px;">View</a>
+                <a href="${item.url}" download="${item.name}" target="_blank">Download</a>
+            </div>
             ${currentUserRole === 'admin' ? `<button class="deleteBtn" onclick="deleteItem('${type}', '${item.id}')">Delete</button>` : ''}
             </div>`;
         });
