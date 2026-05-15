@@ -171,7 +171,7 @@ function renderItems(items, containerId, msgId, emptyMsg, type, linkText = 'Down
             container.innerHTML += `
             <div class="card-box">
             <h3>${item.name}</h3>
-            <a href="${item.url}" target="_blank">${linkText}</a>
+            <a href="${item.url}" download="${item.name}" target="_blank">${linkText}</a>
             ${currentUserRole === 'admin' ? `<button class="deleteBtn" onclick="deleteItem('${type}', '${item.id}')">Delete</button>` : ''}
             </div>`;
         });
