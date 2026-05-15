@@ -152,16 +152,6 @@ function loadRecords() {
     });
 }
 
-function getDirectDownloadLink(url) {
-    let fileId = "";
-    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (match && match[1]) fileId = match[1];
-    else {
-        const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-        if (idMatch && idMatch[1]) fileId = idMatch[1];
-    }
-    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : url;
-}
 
 function renderItems(items, containerId, msgId, emptyMsg, type) {
     const container = document.getElementById(containerId);
@@ -174,13 +164,11 @@ function renderItems(items, containerId, msgId, emptyMsg, type) {
     } else {
         noMsg.style.display = "none";
         items.forEach((item) => {
-            const downloadUrl = getDirectDownloadLink(item.url);
             container.innerHTML += `
             <div class="card-box">
             <h3>${item.name}</h3>
             <div style="margin: 10px 0;">
-                <a href="${item.url}" target="_blank" style="margin-right: 15px;">View</a>
-                <a href="${downloadUrl}">Download</a>
+                <a href="${item.url}" target="_blank">View / Download</a>
             </div>
             ${currentUserRole === 'admin' ? `<button class="deleteBtn" onclick="deleteItem('${type}', '${item.id}')">Delete</button>` : ''}
             </div>`;
