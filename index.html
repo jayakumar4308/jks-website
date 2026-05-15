@@ -4,110 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JKS Website</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:#eef4ff;}
-
-/* LOGIN */
-#loginScreen{
-position:fixed;width:100%;height:100vh;
-display:flex;justify-content:center;align-items:center;
-background:linear-gradient(135deg,#0f172a,#2563eb,#38bdf8);
-}
-
-.login-box{
-width:420px;
-background:rgba(255,255,255,0.18);
-backdrop-filter:blur(15px);
-padding:45px;
-border-radius:25px;
-text-align:center;
-color:white;
-}
-
-.login-box img{
-width:90px;height:90px;border-radius:50%;border:3px solid white;margin-bottom:12px;
-}
-
-.login-box input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border-radius:10px;
-border:none;
-}
-
-.login-box button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:white;
-color:#2563eb;
-font-weight:bold;
-}
-
-/* HEADER */
-header{
-background:#2563eb;
-color:white;
-display:flex;
-justify-content:space-between;
-padding:15px;
-align-items:center;
-}
-
-.logo-section{display:flex;gap:15px;align-items:center;}
-.logo-section img{width:70px;height:70px;border-radius:50%;border:3px solid white;}
-
-/* LAYOUT */
-.container{display:flex;}
-.sidebar{width:260px;background:white;padding:20px;min-height:100vh;}
-.sidebar button{width:100%;padding:12px;margin:10px 0;border:none;border-radius:10px;background:#2563eb;color:white;}
-
-.content{flex:1;padding:20px;}
-.page{display:none;background:white;padding:20px;border-radius:12px;}
-.active{display:block;}
-
-.card-box{
-background:#eef5ff;
-border:2px dashed #2563eb;
-padding:15px;
-border-radius:12px;
-margin-top:10px;
-}
-
-input,select{
-width:100%;
-padding:10px;
-margin-top:8px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-button.action{
-margin-top:10px;
-padding:10px;
-background:#2563eb;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.deleteBtn{
-background:red;
-margin-left:10px;
-}
-
-footer{
-background:#2563eb;
-color:white;
-text-align:center;
-padding:15px;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -115,12 +12,13 @@ padding:15px;
 <!-- LOGIN -->
 <div id="loginScreen">
 <div class="login-box">
-<img src="logo.png">
+<img src="logo.png" alt="logo.png">
 <h2>JKS LOGIN</h2>
 
-<input id="username" placeholder="Username">
+<input id="username" placeholder="Username (or Admin Email)">
 <input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
+<button id="loginBtn">Login</button>
+<span id="forgotPasswordBtn" class="forgot-password">Forgot Password?</span>
 
 </div>
 </div>
@@ -128,7 +26,7 @@ padding:15px;
 <!-- HEADER -->
 <header>
 <div class="logo-section">
-<img src="logo.png">
+<img src="logo.png" alt="logo.png">
 <div>
 <h1>JKS</h1>
 <p>Digital Library</p>
@@ -141,15 +39,17 @@ padding:15px;
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-<button onclick="showPage('welcome')">Welcome</button>
-<button onclick="showPage('books')">Books</button>
-<button onclick="showPage('records')">Programming Records</button>
-<button onclick="showPage('contact')">Contact</button>
+<button id="navWelcome">Welcome</button>
+<button id="navBooks">Books</button>
+<button id="navRecords">Programming Records</button>
+<button id="navContact">Contact</button>
 
 <div id="adminMenu" style="display:none;">
-<button onclick="showPage('upload')">Upload</button>
-<button onclick="showPage('settings')">Settings</button>
+<button id="navUpload">Upload</button>
+<button id="navSettings">Settings</button>
 </div>
+
+<button id="logoutBtn" class="logout-btn">Logout</button>
 </div>
 
 <!-- CONTENT -->
@@ -166,14 +66,14 @@ padding:15px;
 <!-- BOOKS -->
 <div id="books" class="page">
 <h2>Books</h2>
-<p id="noBooks">No Books Uploaded Yet. Books not uploaded yet.</p>
+<p id="noBooks">Loading books...</p>
 <div id="booksContainer"></div>
 </div>
 
 <!-- RECORDS -->
 <div id="records" class="page">
 <h2>Programming Records</h2>
-<p id="noRecords">No Records Uploaded Yet. Records not uploaded yet.</p>
+<p id="noRecords">Loading records...</p>
 <div id="recordsContainer"></div>
 </div>
 
@@ -197,49 +97,30 @@ padding:15px;
 <div class="card-box">
 <h3>Upload Book</h3>
 <input id="bookName" placeholder="Book Name">
-<input type="file" id="bookFile">
-<button class="action" onclick="uploadBook()">Upload Book</button>
+<input type="file" id="bookFile" accept="application/pdf,.doc,.docx">
+<button class="action" id="uploadBookBtn">Upload Book</button>
+<p id="bookUploadStatus"></p>
 </div>
 
 <div class="card-box">
 <h3>Upload Record</h3>
 <input id="recordName" placeholder="Record Name">
-<input type="file" id="recordFile">
-<button class="action" onclick="uploadRecord()">Upload Record</button>
+<input type="file" id="recordFile" accept="application/pdf,.doc,.docx">
+<button class="action" id="uploadRecordBtn">Upload Record</button>
+<p id="recordUploadStatus"></p>
 </div>
 
 </div>
 
-<!-- SETTINGS (FULL CONTROL) -->
+<!-- SETTINGS -->
 <div id="settings" class="page">
 <h2>Settings</h2>
 
 <div class="card-box">
-<h3>Add Admin</h3>
-<input id="newAdminUser" placeholder="Username">
-<input id="newAdminPass" placeholder="Password">
-<button class="action" onclick="addAdmin()">Add Admin</button>
-</div>
-
-<div class="card-box">
-<h3>Add Guest</h3>
-<input id="newGuestUser" placeholder="Username">
-<input id="newGuestPass" placeholder="Password">
-<button class="action" onclick="addGuest()">Add Guest</button>
-</div>
-
-<div class="card-box">
 <h3>Change Admin Password</h3>
-<input id="adminTarget" placeholder="Admin Username">
-<input id="adminNewPass" placeholder="New Password">
-<button class="action" onclick="changeAdminPass()">Update</button>
-</div>
-
-<div class="card-box">
-<h3>Change Guest Password</h3>
-<input id="guestTarget" placeholder="Guest Username">
-<input id="guestNewPass" placeholder="New Password">
-<button class="action" onclick="changeGuestPass()">Update</button>
+<input id="oldPass" type="password" placeholder="Old Password">
+<input id="newPass" type="password" placeholder="New Password">
+<button class="action" id="changePassBtn">Change Password</button>
 </div>
 
 </div>
@@ -251,111 +132,7 @@ padding:15px;
 © 2026 JKS Website | Jayakumar V.R
 </footer>
 
-<script>
-
-/* USERS */
-let admins=[{u:"jayakumar",p:"jks123"}];
-let guests=[{u:"guest",p:"guest123"}];
-let currentUser=null;
-
-/* VOICE LOGIN */
-window.onload=()=>{
-let msg=new SpeechSynthesisUtterance("welcome to JKS login");
-speechSynthesis.speak(msg);
-}
-
-/* LOGIN */
-function login(){
-let u=username.value;
-let p=password.value;
-
-let a=admins.find(x=>x.u===u && x.p===p);
-if(a){
-currentUser="admin";
-loginScreen.style.display="none";
-adminMenu.style.display="block";
-roleText.innerText="Admin";
-setTimeout(()=>speechSynthesis.speak(new SpeechSynthesisUtterance("welcome to JKS website")),300);
-return;
-}
-
-let g=guests.find(x=>x.u===u && x.p===p);
-if(g){
-currentUser="guest";
-loginScreen.style.display="none";
-roleText.innerText="Guest";
-setTimeout(()=>speechSynthesis.speak(new SpeechSynthesisUtterance("welcome to JKS website")),300);
-return;
-}
-
-alert("Invalid Login");
-}
-
-/* PAGE */
-function showPage(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-
-/* UPLOAD */
-function uploadBook(){
-let name=bookName.value;
-let file=bookFile.files[0];
-
-if(!name||!file)return;
-
-let url=URL.createObjectURL(file);
-
-noBooks.style.display="none";
-
-booksContainer.innerHTML+=`
-<div class="card-box">
-<h3>${name}</h3>
-<a href="${url}" target="_blank">Download</a>
-<button class="deleteBtn" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
-
-function uploadRecord(){
-let name=recordName.value;
-let file=recordFile.files[0];
-
-if(!name||!file)return;
-
-let url=URL.createObjectURL(file);
-
-noRecords.style.display="none";
-
-recordsContainer.innerHTML+=`
-<div class="card-box">
-<h3>${name}</h3>
-<a href="${url}" target="_blank">View</a>
-<button class="deleteBtn" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
-
-/* SETTINGS */
-function addAdmin(){
-admins.push({u:newAdminUser.value,p:newAdminPass.value});
-alert("Admin Added");
-}
-
-function addGuest(){
-guests.push({u:newGuestUser.value,p:newGuestPass.value});
-alert("Guest Added");
-}
-
-function changeAdminPass(){
-let a=admins.find(x=>x.u===adminTarget.value);
-if(a){a.p=adminNewPass.value;alert("Updated");}
-}
-
-function changeGuestPass(){
-let g=guests.find(x=>x.u===guestTarget.value);
-if(g){g.p=guestNewPass.value;alert("Updated");}
-}
-
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>

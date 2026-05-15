@@ -1,0 +1,14 @@
+{
+  "books": [],
+  "records": [],
+  "users": {
+    "admin": {
+      "username": "jayakumar432008@gmail.com",
+      "password": "jks542008"
+    },
+    "guest": {
+      "username": "guest",
+      "password": "guest123"
+    }
+  }
+}

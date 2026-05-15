@@ -1,0 +1,113 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#eef4ff;}
+
+/* LOGIN */
+#loginScreen{
+position:fixed;width:100%;height:100vh;
+display:flex;justify-content:center;align-items:center;
+background:linear-gradient(135deg,#0f172a,#2563eb,#38bdf8);
+z-index: 1000; /* Ensure it stays on top */
+}
+
+.login-box{
+width:420px;
+background:rgba(255,255,255,0.18);
+backdrop-filter:blur(15px);
+padding:45px;
+border-radius:25px;
+text-align:center;
+color:white;
+}
+
+.login-box img{
+width:90px;height:90px;border-radius:50%;border:3px solid white;margin-bottom:12px;
+}
+
+.login-box input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:10px;
+border:none;
+}
+
+.login-box button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:white;
+color:#2563eb;
+font-weight:bold;
+cursor:pointer;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: 15px;
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+/* HEADER */
+header{
+background:#2563eb;
+color:white;
+display:flex;
+justify-content:space-between;
+padding:15px;
+align-items:center;
+}
+
+.logo-section{display:flex;gap:15px;align-items:center;}
+.logo-section img{width:70px;height:70px;border-radius:50%;border:3px solid white;}
+
+/* LAYOUT */
+.container{display:flex;}
+.sidebar{width:260px;background:white;padding:20px;min-height:100vh;}
+.sidebar button{width:100%;padding:12px;margin:10px 0;border:none;border-radius:10px;background:#2563eb;color:white;cursor:pointer;}
+.sidebar button.logout-btn { background: #ef4444; margin-top: 30px; }
+
+.content{flex:1;padding:20px;}
+.page{display:none;background:white;padding:20px;border-radius:12px;}
+.active{display:block;}
+
+.card-box{
+background:#eef5ff;
+border:2px dashed #2563eb;
+padding:15px;
+border-radius:12px;
+margin-top:10px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button.action{
+margin-top:10px;
+padding:10px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.deleteBtn{
+background:red;
+margin-left:10px;
+}
+
+footer{
+background:#2563eb;
+color:white;
+text-align:center;
+padding:15px;
+}
