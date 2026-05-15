@@ -5,12 +5,12 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } f
 
 // TODO: Paste your Firebase config object here!
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDspOEF754J_MAZRWWLrRyY6bBxzjAVlVs",
+    authDomain: "jks-website-dd99e.firebaseapp.com",
+    projectId: "jks-website-dd99e",
+    storageBucket: "jks-website-dd99e.firebasestorage.app",
+    messagingSenderId: "252666286454",
+    appId: "1:252666286454:web:257ca1da60ffab7435aa57"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -39,7 +39,7 @@ function speakGreeting(role) {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loginScreen.style.display = "none";
-        
+
         // In Firebase, we will set the guest email to guest@jks.com
         if (user.email === "guest@jks.com") {
             currentUserRole = "guest";
@@ -52,7 +52,7 @@ onAuthStateChanged(auth, (user) => {
             adminMenu.style.display = "block";
             speakGreeting("Admin");
         }
-        
+
         loadBooks();
         loadRecords();
     } else {
@@ -68,9 +68,9 @@ onAuthStateChanged(auth, (user) => {
 document.getElementById('loginBtn').addEventListener('click', () => {
     let u = usernameInput.value.trim();
     let p = passwordInput.value;
-    
+
     if (!u || !p) return alert("Enter credentials.");
-    
+
     // Auto-convert guest username to the dummy email
     if (u.toLowerCase() === "guest") u = "guest@jks.com";
 
@@ -91,7 +91,7 @@ document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
 document.getElementById('changePassBtn').addEventListener('click', () => {
     const newPass = document.getElementById('newPass').value;
     if (!newPass || newPass.length < 6) return alert("New password must be at least 6 characters.");
-    
+
     updatePassword(auth.currentUser, newPass).then(() => {
         alert("Password updated successfully!");
         document.getElementById('newPass').value = "";
@@ -115,7 +115,7 @@ document.getElementById('navUpload').addEventListener('click', () => showPage('u
 document.getElementById('navSettings').addEventListener('click', () => showPage('settings'));
 
 // Delete Item
-window.deleteItem = async function(collectionName, docId, fileUrl) {
+window.deleteItem = async function (collectionName, docId, fileUrl) {
     if (currentUserRole !== 'admin') return alert("Only admins can delete.");
     if (!confirm("Are you sure?")) return;
 
@@ -151,7 +151,7 @@ function loadRecords() {
 function renderItems(items, containerId, msgId, emptyMsg, type) {
     const container = document.getElementById(containerId);
     const noMsg = document.getElementById(msgId);
-    
+
     container.innerHTML = "";
     if (items.length === 0) {
         noMsg.style.display = "block";
@@ -179,9 +179,9 @@ async function uploadFile(fileInputId, nameInputId, statusId, collectionName) {
     const statusMsg = document.getElementById(statusId);
 
     if (!name || !file) return alert("Please provide a name and select a file.");
-    
+
     statusMsg.innerText = "Uploading to Firebase... please wait.";
-    
+
     const uniqueFileName = `${Date.now()}_${file.name}`;
     const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
 
