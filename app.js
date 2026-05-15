@@ -1,3 +1,23 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+// TODO: Paste your Firebase config object here!
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
 // DOM Elements
 const loginScreen = document.getElementById('loginScreen');
 const adminMenu = document.getElementById('adminMenu');
@@ -5,20 +25,9 @@ const roleText = document.getElementById('roleText');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 
-// State
-let currentUserRole = localStorage.getItem('userRole') || null;
+let currentUserRole = null;
 
-// Initialization
-window.onload = () => {
-    if (currentUserRole) {
-        handleAuthSuccess(currentUserRole);
-    } else {
-        let msg = new SpeechSynthesisUtterance("welcome to JKS login");
-        speechSynthesis.speak(msg);
-    }
-};
-
-// Voice Greeting Helper
+// Voice Greeting
 function speakGreeting(role) {
     setTimeout(() => {
         let msg = new SpeechSynthesisUtterance(`Welcome to JKS website, ${role}`);
@@ -26,75 +35,73 @@ function speakGreeting(role) {
     }, 300);
 }
 
-function handleAuthSuccess(role) {
-    currentUserRole = role;
-    localStorage.setItem('userRole', role);
-    loginScreen.style.display = "none";
-    
-    if (role === "admin") {
-        roleText.innerText = "Admin";
-        adminMenu.style.display = "block";
+// Auth State Listener
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loginScreen.style.display = "none";
+        
+        // In Firebase, we will set the guest email to guest@jks.com
+        if (user.email === "guest@jks.com") {
+            currentUserRole = "guest";
+            roleText.innerText = "Guest";
+            adminMenu.style.display = "none";
+            speakGreeting("Guest");
+        } else {
+            currentUserRole = "admin";
+            roleText.innerText = "Admin";
+            adminMenu.style.display = "block";
+            speakGreeting("Admin");
+        }
+        
+        loadBooks();
+        loadRecords();
     } else {
-        roleText.innerText = "Guest";
-        adminMenu.style.display = "none";
+        currentUserRole = null;
+        loginScreen.style.display = "flex";
+        showPage('welcome');
+        let msg = new SpeechSynthesisUtterance("welcome to JKS login");
+        speechSynthesis.speak(msg);
     }
+});
 
-    speakGreeting(role === "admin" ? "Admin" : "Guest");
-    loadBooks();
-    loadRecords();
-}
-
-// ==========================================
-// AUTHENTICATION
-// ==========================================
-
-// Login Button Click
-document.getElementById('loginBtn').addEventListener('click', async () => {
+// Login
+document.getElementById('loginBtn').addEventListener('click', () => {
     let u = usernameInput.value.trim();
     let p = passwordInput.value;
+    
+    if (!u || !p) return alert("Enter credentials.");
+    
+    // Auto-convert guest username to the dummy email
+    if (u.toLowerCase() === "guest") u = "guest@jks.com";
 
-    if (!u || !p) {
-        alert("Please enter username/email and password.");
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: u, password: p })
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            handleAuthSuccess(data.role);
-        } else {
-            alert("Invalid Login: " + data.message);
-        }
-    } catch (error) {
-        console.error("Login error:", error);
-        alert("Server error during login.");
-    }
+    signInWithEmailAndPassword(auth, u, p)
+        .catch((error) => alert("Invalid Login: " + error.message));
 });
 
-// Logout Button Click
+// Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {
-    currentUserRole = null;
-    localStorage.removeItem('userRole');
-    loginScreen.style.display = "flex";
-    showPage('welcome');
-    let msg = new SpeechSynthesisUtterance("Logged out. Welcome to JKS login");
-    speechSynthesis.speak(msg);
+    signOut(auth).catch(e => alert("Error logging out."));
 });
 
-// Forgot Password
+// Forgot Password / Change Password
 document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
-    alert("Since this is a custom manual backend, password recovery via email is not set up. Please contact the system administrator.");
+    alert("You can change your password inside the Settings page once logged in.");
 });
 
-// ==========================================
-// PAGE NAVIGATION
-// ==========================================
+document.getElementById('changePassBtn').addEventListener('click', () => {
+    const newPass = document.getElementById('newPass').value;
+    if (!newPass || newPass.length < 6) return alert("New password must be at least 6 characters.");
+    
+    updatePassword(auth.currentUser, newPass).then(() => {
+        alert("Password updated successfully!");
+        document.getElementById('newPass').value = "";
+        document.getElementById('oldPass').value = "";
+    }).catch((error) => {
+        alert("Error changing password: " + error.message + " (You may need to log out and log back in first).");
+    });
+});
+
+// Navigation
 function showPage(id) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(id).classList.add("active");
@@ -107,54 +114,38 @@ document.getElementById('navContact').addEventListener('click', () => showPage('
 document.getElementById('navUpload').addEventListener('click', () => showPage('upload'));
 document.getElementById('navSettings').addEventListener('click', () => showPage('settings'));
 
-// Make delete function globally available for inline HTML onclick handlers
-window.deleteItem = async function(type, docId) {
-    if (currentUserRole !== 'admin') {
-        alert("Only admins can delete files.");
-        return;
-    }
-
-    if (!confirm("Are you sure you want to delete this?")) return;
+// Delete Item
+window.deleteItem = async function(collectionName, docId, fileUrl) {
+    if (currentUserRole !== 'admin') return alert("Only admins can delete.");
+    if (!confirm("Are you sure?")) return;
 
     try {
-        const response = await fetch(`/api/${type}/${docId}`, { method: 'DELETE' });
-        const data = await response.json();
-        
-        if (data.success) {
-            if (type === 'books') loadBooks();
-            if (type === 'records') loadRecords();
-        } else {
-            alert("Failed to delete: " + data.error);
+        await deleteDoc(doc(db, collectionName, docId));
+        if (fileUrl) {
+            // Reconstruct storage ref from URL
+            const fileRef = ref(storage, fileUrl);
+            await deleteObject(fileRef).catch(e => console.log("Storage delete skipped or error"));
         }
     } catch (error) {
         alert("Error deleting: " + error.message);
     }
 }
 
-// ==========================================
-// DATABASE & STORAGE LOGIC
-// ==========================================
-
-// Load Books
-async function loadBooks() {
-    try {
-        const res = await fetch('/api/books');
-        const books = await res.json();
+// Load Data
+function loadBooks() {
+    onSnapshot(collection(db, "books"), (snapshot) => {
+        const books = [];
+        snapshot.forEach(doc => books.push({ id: doc.id, ...doc.data() }));
         renderItems(books, 'booksContainer', 'noBooks', 'No Books Uploaded Yet.', 'books');
-    } catch (error) {
-        console.error("Error loading books:", error);
-    }
+    });
 }
 
-// Load Records
-async function loadRecords() {
-    try {
-        const res = await fetch('/api/records');
-        const records = await res.json();
-        renderItems(records, 'recordsContainer', 'noRecords', 'No Records Uploaded Yet.', 'records', 'View');
-    } catch (error) {
-        console.error("Error loading records:", error);
-    }
+function loadRecords() {
+    onSnapshot(collection(db, "records"), (snapshot) => {
+        const records = [];
+        snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
+        renderItems(records, 'recordsContainer', 'noRecords', 'No Records Uploaded Yet.', 'records');
+    });
 }
 
 function renderItems(items, containerId, msgId, emptyMsg, type) {
@@ -175,95 +166,49 @@ function renderItems(items, containerId, msgId, emptyMsg, type) {
                 <a href="${item.url}" target="_blank" style="margin-right: 15px;">View</a>
                 <a href="${item.url}" download="${item.name}" target="_blank">Download</a>
             </div>
-            ${currentUserRole === 'admin' ? `<button class="deleteBtn" onclick="deleteItem('${type}', '${item.id}')">Delete</button>` : ''}
+            ${currentUserRole === 'admin' ? `<button class="deleteBtn" onclick="deleteItem('${type}', '${item.id}', '${item.url}')">Delete</button>` : ''}
             </div>`;
         });
     }
 }
 
-// Reusable Upload Function
-async function uploadFile(fileInputId, nameInputId, statusId, type) {
-    const nameInput = document.getElementById(nameInputId);
-    const fileInput = document.getElementById(fileInputId);
+// Upload Data
+async function uploadFile(fileInputId, nameInputId, statusId, collectionName) {
+    const name = document.getElementById(nameInputId).value;
+    const file = document.getElementById(fileInputId).files[0];
     const statusMsg = document.getElementById(statusId);
 
-    const name = nameInput.value;
-    const file = fileInput.files[0];
-
-    if (!name || !file) {
-        alert("Please provide a name and select a file.");
-        return;
-    }
-
-    statusMsg.innerText = "Uploading... please wait.";
+    if (!name || !file) return alert("Please provide a name and select a file.");
     
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('file', file);
+    statusMsg.innerText = "Uploading to Firebase... please wait.";
+    
+    const uniqueFileName = `${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
 
     try {
-        const response = await fetch(`/api/upload/${type}`, {
-            method: 'POST',
-            body: formData
+        const uploadTask = await uploadBytesResumable(storageRef, file);
+        const downloadURL = await getDownloadURL(uploadTask.ref);
+
+        await addDoc(collection(db, collectionName), {
+            name: name,
+            url: downloadURL,
+            createdAt: new Date()
         });
-        const data = await response.json();
 
-        if (data.success) {
-            statusMsg.innerText = "Upload successful!";
-            nameInput.value = "";
-            fileInput.value = "";
-            
-            // Refresh list
-            if (type === 'books') loadBooks();
-            if (type === 'records') loadRecords();
-
-            setTimeout(() => { statusMsg.innerText = ""; }, 3000);
-        } else {
-            statusMsg.innerText = "Upload failed: " + data.error;
-        }
+        statusMsg.innerText = "Upload successful!";
+        document.getElementById(nameInputId).value = "";
+        document.getElementById(fileInputId).value = "";
+        setTimeout(() => { statusMsg.innerText = ""; }, 3000);
     } catch (error) {
         console.error("Upload error:", error);
-        statusMsg.innerText = "Upload failed: Server error.";
+        statusMsg.innerText = "Upload failed: " + error.message;
     }
 }
 
-// Upload Book Click
 document.getElementById('uploadBookBtn').addEventListener('click', () => {
     uploadFile('bookFile', 'bookName', 'bookUploadStatus', 'books');
 });
 
-// Upload Record Click
 document.getElementById('uploadRecordBtn').addEventListener('click', () => {
     uploadFile('recordFile', 'recordName', 'recordUploadStatus', 'records');
-});
-
-// Change Password
-document.getElementById('changePassBtn').addEventListener('click', async () => {
-    const oldPass = document.getElementById('oldPass').value;
-    const newPass = document.getElementById('newPass').value;
-
-    if (!oldPass || !newPass) {
-        alert("Please enter both old and new passwords.");
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/change-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ oldPassword: oldPass, newPassword: newPass })
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            alert("Password successfully changed!");
-            document.getElementById('oldPass').value = "";
-            document.getElementById('newPass').value = "";
-        } else {
-            alert("Error: " + data.message);
-        }
-    } catch (error) {
-        console.error("Change password error:", error);
-        alert("Server error while changing password.");
-    }
 });
