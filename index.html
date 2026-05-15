@@ -1,138 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JKS Website</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKS Website</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-<div class="login-box">
-<img src="logo.png" alt="logo.png">
-<h2>JKS LOGIN</h2>
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <img src="logo.png" alt="logo.png">
+            <h2>JKS LOGIN</h2>
 
-<input id="username" placeholder="Username (or Admin Email)">
-<input id="password" type="password" placeholder="Password">
-<button id="loginBtn">Login</button>
-<span id="forgotPasswordBtn" class="forgot-password">Forgot Password?</span>
+            <input id="username" placeholder="guest (or Admin Email)">
+            <input id="password" type="password" placeholder="guest123(or admin password)">
+            <button id="loginBtn">Login</button>
+            <span id="forgotPasswordBtn" class="forgot-password">Forgot Password?</span>
 
-</div>
-</div>
+        </div>
+    </div>
 
-<!-- HEADER -->
-<header>
-<div class="logo-section">
-<img src="logo.png" alt="logo.png">
-<div>
-<h1>JKS</h1>
-<p>Digital Library</p>
-</div>
-</div>
-<h3 id="roleText">Welcome</h3>
-</header>
+    <!-- HEADER -->
+    <header>
+        <div class="logo-section">
+            <img src="logo.png" alt="logo.png">
+            <div>
+                <h1>JKS</h1>
+                <p>Digital Library</p>
+            </div>
+        </div>
+        <h3 id="roleText">Welcome</h3>
+    </header>
 
-<div class="container">
+    <div class="container">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-<button id="navWelcome">Welcome</button>
-<button id="navBooks">Books</button>
-<button id="navRecords">Programming Records</button>
-<button id="navContact">Contact</button>
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <button id="navWelcome">Welcome</button>
+            <button id="navBooks">Books</button>
+            <button id="navRecords">Programming Records</button>
+            <button id="navContact">Contact</button>
 
-<div id="adminMenu" style="display:none;">
-<button id="navUpload">Upload</button>
-<button id="navSettings">Settings</button>
-</div>
+            <div id="adminMenu" style="display:none;">
+                <button id="navUpload">Upload</button>
+                <button id="navSettings">Settings</button>
+            </div>
 
-<button id="logoutBtn" class="logout-btn">Logout</button>
-</div>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
 
-<!-- CONTENT -->
-<div class="content">
+        <!-- CONTENT -->
+        <div class="content">
 
-<!-- WELCOME -->
-<div id="welcome" class="page active">
-<h2>Welcome</h2>
-<div class="card-box">
-<p>Welcome to Jayakumar's website. You can view and download notes.</p>
-</div>
-</div>
+            <!-- WELCOME -->
+            <div id="welcome" class="page active">
+                <h2>Welcome</h2>
+                <div class="card-box">
+                    <p>Welcome to Jayakumar's website. You can view and download notes.</p>
+                </div>
+            </div>
 
-<!-- BOOKS -->
-<div id="books" class="page">
-<h2>Books</h2>
-<p id="noBooks">Loading books...</p>
-<div id="booksContainer"></div>
-</div>
+            <!-- BOOKS -->
+            <div id="books" class="page">
+                <h2>Books</h2>
+                <p id="noBooks">Loading books...</p>
+                <div id="booksContainer"></div>
+            </div>
 
-<!-- RECORDS -->
-<div id="records" class="page">
-<h2>Programming Records</h2>
-<p id="noRecords">Loading records...</p>
-<div id="recordsContainer"></div>
-</div>
+            <!-- RECORDS -->
+            <div id="records" class="page">
+                <h2>Programming Records</h2>
+                <p id="noRecords">Loading records...</p>
+                <div id="recordsContainer"></div>
+            </div>
 
-<!-- CONTACT -->
-<div id="contact" class="page">
-<h2>Contact</h2>
-<div class="card-box">
-<p><b>Name:</b> Jayakumar V.R</p>
-<p><b>Mail:</b> jayakumar432008@gmail.com</p>
-<p><b>Mail:</b> 112513015@kanchiuniv.ac.in</p>
-<p><b>Course:</b> B.Sc Computer Science with Data Science</p>
-<p><b>Year:</b> 2025 - 2028</p>
-<p><b>University:</b> SCSVMV</p>
-</div>
-</div>
+            <!-- CONTACT -->
+            <div id="contact" class="page">
+                <h2>Contact</h2>
+                <div class="card-box">
+                    <p><b>Name:</b> Jayakumar V.R</p>
+                    <p><b>Mail:</b> jayakumar432008@gmail.com</p>
+                    <p><b>Mail:</b> 112513015@kanchiuniv.ac.in</p>
+                    <p><b>Course:</b> B.Sc Computer Science with Data Science</p>
+                    <p><b>Year:</b> 2025 - 2028</p>
+                    <p><b>University:</b> SCSVMV</p>
+                </div>
+            </div>
 
-<!-- UPLOAD -->
-<div id="upload" class="page">
-<h2>Upload (Admin Only)</h2>
+            <!-- UPLOAD -->
+            <div id="upload" class="page">
+                <h2>Upload (Admin Only)</h2>
 
-<div class="card-box">
-<h3>Upload Book</h3>
-<input id="bookName" placeholder="Book Name">
-<input type="text" id="bookUrl" placeholder="Paste Google Drive Link Here">
-<button class="action" id="uploadBookBtn">Add Book</button>
-<p id="bookUploadStatus"></p>
-</div>
+                <div class="card-box">
+                    <h3>Upload Book</h3>
+                    <input id="bookName" placeholder="Book Name">
+                    <input type="text" id="bookUrl" placeholder="Paste Google Drive Link Here">
+                    <button class="action" id="uploadBookBtn">Add Book</button>
+                    <p id="bookUploadStatus"></p>
+                </div>
 
-<div class="card-box">
-<h3>Upload Record</h3>
-<input id="recordName" placeholder="Record Name">
-<input type="text" id="recordUrl" placeholder="Paste Google Drive Link Here">
-<button class="action" id="uploadRecordBtn">Add Record</button>
-<p id="recordUploadStatus"></p>
-</div>
+                <div class="card-box">
+                    <h3>Upload Record</h3>
+                    <input id="recordName" placeholder="Record Name">
+                    <input type="text" id="recordUrl" placeholder="Paste Google Drive Link Here">
+                    <button class="action" id="uploadRecordBtn">Add Record</button>
+                    <p id="recordUploadStatus"></p>
+                </div>
 
-</div>
+            </div>
 
-<!-- SETTINGS -->
-<div id="settings" class="page">
-<h2>Settings</h2>
+            <!-- SETTINGS -->
+            <div id="settings" class="page">
+                <h2>Settings</h2>
 
-<div class="card-box">
-<h3>Change Admin Password</h3>
-<input id="oldPass" type="password" placeholder="Old Password">
-<input id="newPass" type="password" placeholder="New Password">
-<button class="action" id="changePassBtn">Change Password</button>
-</div>
+                <div class="card-box">
+                    <h3>Change Admin Password</h3>
+                    <input id="oldPass" type="password" placeholder="Old Password">
+                    <input id="newPass" type="password" placeholder="New Password">
+                    <button class="action" id="changePassBtn">Change Password</button>
+                </div>
 
-</div>
+            </div>
 
-</div>
-</div>
+        </div>
+    </div>
 
-<footer>
-© 2026 JKS Website | Jayakumar V.R
-</footer>
+    <footer>
+        © 2026 JKS Website | Jayakumar V.R
+    </footer>
 
-<script type="module" src="app.js"></script>
+    <script type="module" src="app.js"></script>
 
 </body>
+
 </html>
