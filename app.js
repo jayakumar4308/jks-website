@@ -178,9 +178,16 @@ function renderItems(items, containerId, msgId, emptyMsg, type) {
 
 // Add Data (Now using Google Drive Links)
 async function uploadFile(urlInputId, nameInputId, statusId, collectionName) {
-    const name = document.getElementById(nameInputId).value;
-    const url = document.getElementById(urlInputId).value;
+    const nameEl = document.getElementById(nameInputId);
+    const urlEl = document.getElementById(urlInputId);
     const statusMsg = document.getElementById(statusId);
+
+    if (!nameEl || !urlEl) {
+        return alert("Error: Your browser is loading an old version of the website. Please Hard Refresh (Ctrl+Shift+R)!");
+    }
+
+    const name = nameEl.value;
+    const url = urlEl.value;
 
     if (!name || !url) return alert("Please provide a name and paste a valid link.");
 
