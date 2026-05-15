@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+// No need for Firebase Storage anymore since we use Google Drive links!
 
 // TODO: Paste your Firebase config object here!
 const firebaseConfig = {
@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+// storage is no longer needed
 
 // DOM Elements
 const loginScreen = document.getElementById('loginScreen');
@@ -115,17 +115,13 @@ document.getElementById('navUpload').addEventListener('click', () => showPage('u
 document.getElementById('navSettings').addEventListener('click', () => showPage('settings'));
 
 // Delete Item
-window.deleteItem = async function (collectionName, docId, fileUrl) {
+window.deleteItem = async function (collectionName, docId) {
     if (currentUserRole !== 'admin') return alert("Only admins can delete.");
     if (!confirm("Are you sure?")) return;
 
     try {
         await deleteDoc(doc(db, collectionName, docId));
-        if (fileUrl) {
-            // Reconstruct storage ref from URL
-            const fileRef = ref(storage, fileUrl);
-            await deleteObject(fileRef).catch(e => console.log("Storage delete skipped or error"));
-        }
+        // We no longer need to delete from Firebase Storage because files are hosted on Google Drive!
     } catch (error) {
         alert("Error deleting: " + error.message);
     }
@@ -180,43 +176,38 @@ function renderItems(items, containerId, msgId, emptyMsg, type) {
     }
 }
 
-// Upload Data
-async function uploadFile(fileInputId, nameInputId, statusId, collectionName) {
+// Add Data (Now using Google Drive Links)
+async function uploadFile(urlInputId, nameInputId, statusId, collectionName) {
     const name = document.getElementById(nameInputId).value;
-    const file = document.getElementById(fileInputId).files[0];
+    const url = document.getElementById(urlInputId).value;
     const statusMsg = document.getElementById(statusId);
 
-    if (!name || !file) return alert("Please provide a name and select a file.");
+    if (!name || !url) return alert("Please provide a name and paste a valid link.");
 
-    statusMsg.innerText = "Uploading to Firebase... please wait.";
-
-    const uniqueFileName = `${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
+    statusMsg.innerText = "Adding to Database... please wait.";
 
     try {
-        const snapshot = await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
+        // Save the Name and the Google Drive URL directly to Firestore Database
         await addDoc(collection(db, collectionName), {
             name: name,
-            url: downloadURL,
+            url: url,
             createdAt: new Date()
         });
 
-        statusMsg.innerText = "Upload successful!";
+        statusMsg.innerText = "Successfully Added!";
         document.getElementById(nameInputId).value = "";
-        document.getElementById(fileInputId).value = "";
+        document.getElementById(urlInputId).value = "";
         setTimeout(() => { statusMsg.innerText = ""; }, 3000);
     } catch (error) {
-        console.error("Upload error:", error);
-        statusMsg.innerText = "Upload failed: " + error.message;
+        console.error("Database error:", error);
+        statusMsg.innerText = "Error: " + error.message;
     }
 }
 
 document.getElementById('uploadBookBtn').addEventListener('click', () => {
-    uploadFile('bookFile', 'bookName', 'bookUploadStatus', 'books');
+    uploadFile('bookUrl', 'bookName', 'bookUploadStatus', 'books');
 });
 
 document.getElementById('uploadRecordBtn').addEventListener('click', () => {
-    uploadFile('recordFile', 'recordName', 'recordUploadStatus', 'records');
+    uploadFile('recordUrl', 'recordName', 'recordUploadStatus', 'records');
 });
