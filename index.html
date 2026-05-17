@@ -41,8 +41,7 @@
         <!-- SIDEBAR -->
         <div class="sidebar">
             <button id="navWelcome">Welcome</button>
-            <button id="navBooks">Books</button>
-            <button id="navRecords">Programming Records</button>
+            <button id="navLibrary">Library (Subjects)</button>
             <button id="navContact">Contact</button>
 
             <div id="adminMenu" style="display:none;">
@@ -64,18 +63,35 @@
                 </div>
             </div>
 
-            <!-- BOOKS -->
-            <div id="books" class="page">
-                <h2>Books</h2>
-                <p id="noBooks">Loading books...</p>
-                <div id="booksContainer"></div>
+            <!-- LIBRARY (SUBJECTS) -->
+            <div id="library" class="page">
+                <h2>Library</h2>
+                <p id="noSubjects">Loading subjects...</p>
+                <div id="subjectsContainer" class="subjects-grid"></div>
             </div>
 
-            <!-- RECORDS -->
-            <div id="records" class="page">
-                <h2>Programming Records</h2>
-                <p id="noRecords">Loading records...</p>
-                <div id="recordsContainer"></div>
+            <!-- SUBJECT DETAILS -->
+            <div id="subject-details" class="page">
+                <button id="backToLibraryBtn" class="action" style="margin-bottom:15px; background:#64748b;">&larr; Back to Library</button>
+                <h2 id="currentSubjectTitle">Subject Name</h2>
+                
+                <div class="subject-controls">
+                    <div class="tabs">
+                        <button id="tabBooks" class="tab-btn active">Books</button>
+                        <button id="tabRecords" class="tab-btn">Records</button>
+                    </div>
+                    <select id="sortDropdown" class="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="nameAZ">Name (A - Z)</option>
+                        <option value="nameZA">Name (Z - A)</option>
+                    </select>
+                </div>
+
+                <div id="subjectContent">
+                    <p id="noSubjectItems">Loading...</p>
+                    <div id="subjectItemsContainer"></div>
+                </div>
             </div>
 
             <!-- CONTACT -->
@@ -97,6 +113,9 @@
 
                 <div class="card-box">
                     <h3>Upload Book</h3>
+                    <select class="subject-select" id="bookSubjectSelect">
+                        <option value="">Select a Subject...</option>
+                    </select>
                     <input id="bookName" placeholder="Book Name">
                     <input type="text" id="bookUrl" placeholder="Paste Google Drive Link Here">
                     <button class="action" id="uploadBookBtn">Add Book</button>
@@ -105,6 +124,9 @@
 
                 <div class="card-box">
                     <h3>Upload Record</h3>
+                    <select class="subject-select" id="recordSubjectSelect">
+                        <option value="">Select a Subject...</option>
+                    </select>
                     <input id="recordName" placeholder="Record Name">
                     <input type="text" id="recordUrl" placeholder="Paste Google Drive Link Here">
                     <button class="action" id="uploadRecordBtn">Add Record</button>
@@ -122,6 +144,26 @@
                     <input id="oldPass" type="password" placeholder="Old Password">
                     <input id="newPass" type="password" placeholder="New Password">
                     <button class="action" id="changePassBtn">Change Password</button>
+                </div>
+
+                <div class="card-box">
+                    <h3>Create New Subject</h3>
+                    <input id="newSubjectName" placeholder="Subject Name (e.g. Python)">
+                    <input id="newSubjectImage" placeholder="Image URL (Optional)">
+                    
+                    <p style="margin-top:10px; font-size:14px; font-weight:bold;">Or choose a background color:</p>
+                    <div class="color-options" id="subjectColorOptions">
+                        <div class="color-swatch selected" data-color="#3b82f6" style="background:#3b82f6;"></div>
+                        <div class="color-swatch" data-color="#ef4444" style="background:#ef4444;"></div>
+                        <div class="color-swatch" data-color="#10b981" style="background:#10b981;"></div>
+                        <div class="color-swatch" data-color="#f59e0b" style="background:#f59e0b;"></div>
+                        <div class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6;"></div>
+                        <div class="color-swatch" data-color="#ec4899" style="background:#ec4899;"></div>
+                        <div class="color-swatch" data-color="#475569" style="background:#475569;"></div>
+                    </div>
+
+                    <button class="action" id="createSubjectBtn">Create Subject</button>
+                    <p id="subjectCreateStatus"></p>
                 </div>
 
             </div>
